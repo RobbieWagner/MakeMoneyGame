@@ -6,8 +6,16 @@ using UnityEngine;
 
 namespace RobbieWagnerGames.Utilities.SaveData
 {
-    public class JsonDataService : MonoBehaviourSingleton<JsonDataService>, IDataService
+    public class JsonDataService : IDataService
     {
+        public static JsonDataService Instance { get; set; }
+        
+        public JsonDataService() 
+        {
+            if (Instance == null)
+                Instance = this;
+        }
+
         public bool SaveData<T>(string relativePath, T data, bool encrypt = false)
         {
             string path = CreateValidDataPath(relativePath);

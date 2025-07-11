@@ -19,7 +19,7 @@ namespace RobbieWagnerGames.UI
         //[HideInInspector] public Canvas lastMenu;
         [HideInInspector] public Menu lastMenu;
 
-        [SerializeField] private GameObject defaultSelection;
+        [SerializeField] protected GameObject defaultSelection;
 
         public Coroutine menuCoroutine = null;
 
@@ -37,8 +37,9 @@ namespace RobbieWagnerGames.UI
                 backButton.onClick.AddListener(BackToLastMenu);
                 InputManager.Instance.Controls.UI.Cancel.performed += BackToLastMenu;
             }
-            EventSystemManager.Instance.eventSystem.SetSelectedGameObject(defaultSelection);
-            InputManager.Instance.EnableActionMap(ActionMapName.UI);
+			EventSystemManager.Instance.SetSelected(defaultSelection);
+            Debug.Log(defaultSelection.name);
+			InputManager.Instance.EnableActionMap(ActionMapName.UI);
         }
 
         protected virtual void OnDisable()

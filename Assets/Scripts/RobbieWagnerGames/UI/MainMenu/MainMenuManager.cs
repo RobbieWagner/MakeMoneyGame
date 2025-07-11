@@ -1,4 +1,7 @@
+using RobbieWagnerGames.MakeMoney;
+using RobbieWagnerGames.Managers;
 using RobbieWagnerGames.Utilities.SaveData;
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -8,6 +11,8 @@ namespace RobbieWagnerGames.UI
 {
     public class MainMenuManager : Menu
     {
+        public static MainMenuManager Instance { get; set; }
+
         [SerializeField] private Button continueButton;
         [SerializeField] private Button newGameButton;
         [SerializeField] private Button settingsButton;
@@ -23,6 +28,11 @@ namespace RobbieWagnerGames.UI
 
         protected override void Awake()
         {
+            if (Instance != null)
+                Destroy(this.gameObject);
+            else
+                Instance = this;
+
             base.Awake();
             Cursor.lockState = CursorLockMode.None;
 
@@ -33,7 +43,7 @@ namespace RobbieWagnerGames.UI
         protected override void OnEnable()
         {
             newGameButton.onClick.AddListener(StartNewGame);
-            continueButton.onClick.AddListener(StartGame);
+            continueButton.onClick.AddListener(ContinueGame);
             settingsButton.onClick.AddListener(OpenSettings);
             //controlsButton.onClick.AddListener(OpenControls);
             //creditsButton.onClick.AddListener(OpenCredits);
@@ -49,7 +59,7 @@ namespace RobbieWagnerGames.UI
             base.OnDisable();
 
             newGameButton.onClick.RemoveListener(StartNewGame);
-            continueButton.onClick.RemoveListener(StartGame);
+            continueButton.onClick.RemoveListener(ContinueGame);
             settingsButton.onClick.RemoveListener(OpenSettings);
             //controlsButton.onClick.RemoveListener(OpenControls);
             //creditsButton.onClick.RemoveListener(OpenCredits);
@@ -57,35 +67,13 @@ namespace RobbieWagnerGames.UI
         }
 
         private void StartNewGame()
-        {    
-            if(TryStartGame())
-                JsonDataService.Instance.PurgeData();
+        {
+            GameManager.Instance.StartGame(true);
         }
 
-        public void StartGame()
+        private void ContinueGame() 
         {
-            if (menuCoroutine == null)
-                menuCoroutine = StartCoroutine(StartGameCo());
-        }
-
-        public bool TryStartGame()
-        {
-            if (menuCoroutine == null)
-            {
-                menuCoroutine = StartCoroutine(StartGameCo());
-                return true;
-            }
-            return false;
-        }
-
-        public IEnumerator StartGameCo()
-        {
-            ToggleButtonInteractibility(false);
-
-            yield return StartCoroutine(ScreenCover.Instance.FadeCoverIn());
-            menuCoroutine = null;
-
-            SceneManager.LoadScene(sceneToGoTo);
+            GameManager.Instance.StartGame();
         }
 
         private void OpenSettings()
@@ -128,5 +116,44 @@ namespace RobbieWagnerGames.UI
 
             StopCoroutine(SwapMenu(active, next));
         }
-    }
+
+		public void InitializeMenu()
+		{
+			if (GameManager.Instance.hasGameData)
+            {
+                continueButton.gameObject.SetActive(true);
+
+                Navigation cNav = new Navigation();
+                cNav.mode = Navigation.Mode.Explicit;
+                cNav.selectOnDown = newGameButton;
+                continueButton.navigation = cNav;
+
+				Navigation nNav = new Navigation();
+				nNav.mode = Navigation.Mode.Explicit;
+                nNav.selectOnUp = continueButton;
+				nNav.selectOnDown = settingsButton;
+				continueButton.navigation = nNav;
+			}
+            else
+            {
+                continueButton.gameObject.SetActive(false);
+
+				Navigation nNav = new Navigation();
+				nNav.mode = Navigation.Mode.Explicit;
+				nNav.selectOnDown = settingsButton;
+				continueButton.navigation = nNav;
+			}
+
+			Navigation sNav = new Navigation();
+			sNav.mode = Navigation.Mode.Explicit;
+			sNav.selectOnUp = newGameButton;
+			sNav.selectOnDown = quitButton;
+			continueButton.navigation = sNav; 
+            
+            Navigation qNav = new Navigation();
+			qNav.mode = Navigation.Mode.Explicit;
+			qNav.selectOnUp = settingsButton;
+			continueButton.navigation = qNav;
+		}
+	}
 }
