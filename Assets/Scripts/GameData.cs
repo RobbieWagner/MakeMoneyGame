@@ -9,6 +9,7 @@ namespace RobbieWagnerGames.MakeMoney
 	{
 		public string saveName = "default";
 		public int workers = 0;
+		public int clicks = 0;
 
 		public override bool Equals(object obj)
 		{
@@ -18,12 +19,14 @@ namespace RobbieWagnerGames.MakeMoney
 			}
 
 			GameData other = (GameData)obj;
-			return workers == other.workers && saveName.Equals(other.saveName);
+			return workers == other.workers 
+				&& saveName.Equals(other.saveName) 
+				&& clicks == other.clicks;
 		}
 
 		public override int GetHashCode()
 		{
-			return HashCode.Combine(workers.GetHashCode(), saveName.GetHashCode());
+			return HashCode.Combine(workers.GetHashCode(), saveName.GetHashCode(), clicks.GetHashCode());
 		}
 	}
 }

@@ -19,5 +19,12 @@ namespace RobbieWagnerGames.TileSelectionGame
                 _gameCamera = Camera.main;
             }
         }
+
+        public void SetGameCamera(Camera camera)
+        {
+            _gameCamera.gameObject.SetActive(false);
+            _gameCamera = camera;
+            camera.gameObject.SetActive(true);
+        }
     }
 }

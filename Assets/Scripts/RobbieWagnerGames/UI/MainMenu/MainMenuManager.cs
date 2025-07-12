@@ -50,6 +50,7 @@ namespace RobbieWagnerGames.UI
             quitButton.onClick.AddListener(QuitGame);
 
             //if(JsonDataService.Instance.LoadData())
+            canvas.enabled = true;
 
             base.OnEnable();
         }
@@ -64,6 +65,7 @@ namespace RobbieWagnerGames.UI
             //controlsButton.onClick.RemoveListener(OpenControls);
             //creditsButton.onClick.RemoveListener(OpenCredits);
             quitButton.onClick.RemoveListener(QuitGame);
+            canvas.enabled = false;
         }
 
         private void StartNewGame()
